@@ -19,7 +19,10 @@ namespace WebApplicationKeycloakExample.Controllers {
             DiscoveryResponse disco;
             using(var client = new HttpClient()) {
                 disco = await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest {
-                    Address = Constants.WELL_KNOWN
+                    Address = Constants.WELL_KNOWN,
+                    Policy = new DiscoveryPolicy {
+                        RequireHttps = false
+                    }
                 });
 
                 var redirectUrl = new RequestUrl(disco.AuthorizeEndpoint).CreateAuthorizeUrl(
@@ -31,17 +34,17 @@ namespace WebApplicationKeycloakExample.Controllers {
 
                 return Redirect(redirectUrl);
 
-                var res = await client.RequestAuthorizationCodeTokenAsync(new AuthorizationCodeTokenRequest {
-                    ClientId = Constants.CLIENT_ID,
-                    Address = disco.AuthorizeEndpoint,
-                    RedirectUri = "http://localhost:5000/Home/KeycloakCallback",
-                    Code = "sdf"
-                });
+//                var res = await client.RequestAuthorizationCodeTokenAsync(new AuthorizationCodeTokenRequest {
+//                    ClientId = Constants.CLIENT_ID,
+//                    Address = disco.AuthorizeEndpoint,
+//                    RedirectUri = "http://localhost:5000/Home/KeycloakCallback",
+//                    Code = "sdf"
+//                });
             }
             
             
 
-            return Json(disco);
+//            return Json(disco);
 
             //return View(disco);
         }
@@ -50,7 +53,10 @@ namespace WebApplicationKeycloakExample.Controllers {
             TokenResponse token;
             using(var client = new HttpClient()) {
                 var disco = await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest {
-                    Address = Constants.WELL_KNOWN
+                    Address = Constants.WELL_KNOWN,
+                    Policy = new DiscoveryPolicy {
+                        RequireHttps = false
+                    }
                 });
 
                 token = await client.RequestAuthorizationCodeTokenAsync(new AuthorizationCodeTokenRequest {
@@ -61,27 +67,30 @@ namespace WebApplicationKeycloakExample.Controllers {
                     ClientSecret = Constants.CLIENT_SECRET
                 });
 
-                var intro = await client.IntrospectTokenAsync(new TokenIntrospectionRequest {
-                    Address = disco.IntrospectionEndpoint,
-                    ClientId = Constants.CLIENT_ID,
-                    ClientSecret = Constants.CLIENT_SECRET,
-                    Token = token.AccessToken
-
-
-                });
-
-                var userInfo = await client.GetUserInfoAsync(new UserInfoRequest {
-                    Token = token.AccessToken,
-                    Address = disco.UserInfoEndpoint
-                });
+//                var intro = await client.IntrospectTokenAsync(new TokenIntrospectionRequest {
+//                    Address = disco.IntrospectionEndpoint,
+//                    ClientId = Constants.CLIENT_ID,
+//                    ClientSecret = Constants.CLIENT_SECRET,
+//                    Token = token.AccessToken
+//
+//
+//                });
+//
+//                var userInfo = await client.GetUserInfoAsync(new UserInfoRequest {
+//                    Token = token.AccessToken,
+//                    Address = disco.UserInfoEndpoint
+//                });
 
                 //return Json(userInfo);
             }
             
-            var handler = new JwtSecurityTokenHandler();
-            var jwt = handler.ReadJwtToken(token.IdentityToken);
+//            var handler = new JwtSecurityTokenHandler();
+//            var jwt = handler.ReadJwtToken(token.IdentityToken);
 
-            return Json(jwt.Payload);
+            return Redirect(
+                $"https://jwt.io/#debugger-io?token={token.IdentityToken}");
+            
+            //return Json(jwt.Payload);
         }
 
         public IActionResult About() {
