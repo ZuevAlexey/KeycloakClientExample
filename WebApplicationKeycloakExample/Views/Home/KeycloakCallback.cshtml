@@ -1,0 +1,13 @@
+@model IdentityModel.Client.TokenResponse
+
+@{
+    ViewBag.Title = "See token here";
+    Layout = "_Layout";
+}
+@{
+    var identityLink = $"https://jwt.io/#debugger-io?token={@Model.IdentityToken}";
+    var accessLink = $"https://jwt.io/#debugger-io?token={@Model.AccessToken}";
+}
+<h2>title</h2>
+<a href = "@identityLink">Identity token</a>
+<a href = "@accessLink">Access token</a>

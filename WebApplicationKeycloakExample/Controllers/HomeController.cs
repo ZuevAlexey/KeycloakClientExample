@@ -87,8 +87,7 @@ namespace WebApplicationKeycloakExample.Controllers {
 //            var handler = new JwtSecurityTokenHandler();
 //            var jwt = handler.ReadJwtToken(token.IdentityToken);
 
-            return Redirect(
-                $"https://jwt.io/#debugger-io?token={token.IdentityToken}");
+            return View(token);
             
             //return Json(jwt.Payload);
         }
