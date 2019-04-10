@@ -15,6 +15,31 @@ namespace WebApplicationKeycloakExample.Controllers {
             return View();
         }
 
+        public async Task<IActionResult> Logout() {
+            DiscoveryResponse disco;
+            using(var client = new HttpClient()) {
+                disco = await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest {
+                    Address = Constants.WELL_KNOWN,
+                    Policy = new DiscoveryPolicy {
+                        RequireHttps = false
+                    }
+                });
+
+                var redirectUrl = new RequestUrl(disco.EndSessionEndpoint).CreateEndSessionUrl(postLogoutRedirectUri: Constants.HOME_URL);
+
+                return Redirect(redirectUrl);
+
+//                var res = await client.RequestAuthorizationCodeTokenAsync(new AuthorizationCodeTokenRequest {
+//                    ClientId = Constants.CLIENT_ID,
+//                    Address = disco.AuthorizeEndpoint,
+//                    RedirectUri = "http://localhost:5000/Home/KeycloakCallback",
+//                    Code = "sdf"
+//                });
+            }
+            
+        }
+        
+
         public async Task<IActionResult> KeycloakExample() {
             DiscoveryResponse disco;
             using(var client = new HttpClient()) {
