@@ -1,8 +1,5 @@
-﻿using System;
-using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.Diagnostics;
 using System.Net.Http;
-using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebApplicationKeycloakExample.Models;
@@ -24,7 +21,7 @@ namespace WebApplicationKeycloakExample.Controllers {
                         RequireHttps = false
                     }
                 });
-
+                
                 var redirectUrl = new RequestUrl(disco.EndSessionEndpoint).CreateEndSessionUrl(postLogoutRedirectUri: Constants.HOME_URL);
 
                 return Redirect(redirectUrl);
@@ -90,29 +87,33 @@ namespace WebApplicationKeycloakExample.Controllers {
                     RedirectUri = "http://localhost:5000/Home/KeycloakCallback",
                     Code = code,
                     ClientSecret = Constants.CLIENT_SECRET
+                    
                 });
 
-//                var intro = await client.IntrospectTokenAsync(new TokenIntrospectionRequest {
-//                    Address = disco.IntrospectionEndpoint,
-//                    ClientId = Constants.CLIENT_ID,
-//                    ClientSecret = Constants.CLIENT_SECRET,
-//                    Token = token.AccessToken
-//
-//
-//                });
-//
-//                var userInfo = await client.GetUserInfoAsync(new UserInfoRequest {
-//                    Token = token.AccessToken,
-//                    Address = disco.UserInfoEndpoint
-//                });
+                var intro = await client.IntrospectTokenAsync(new TokenIntrospectionRequest {
+                    Address = disco.IntrospectionEndpoint,
+                    ClientId = Constants.CLIENT_ID,
+                    ClientSecret = Constants.CLIENT_SECRET,
+                    Token = token.IdentityToken
+                });
 
+                var userInfo = await client.GetUserInfoAsync(new UserInfoRequest {
+                                    Token = token.AccessToken,
+                                    Address = disco.UserInfoEndpoint
+                                });
+                
+                return View(new TokenModel {
+                    Token = token,
+                    UserInfo = userInfo
+                });
+                                
                 //return Json(userInfo);
             }
             
 //            var handler = new JwtSecurityTokenHandler();
 //            var jwt = handler.ReadJwtToken(token.IdentityToken);
 
-            return View(token);
+         
             
             //return Json(jwt.Payload);
         }
